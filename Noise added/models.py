@@ -122,6 +122,30 @@ def TLMilin(p,f):
     return Z
 
 @element(num_params=4, units=["Ohm", "Ohm F", "Ohm F", ""],overwrite=True)
+def TLMilinnew(p,f):
+    omega = 2 * np.pi * np.array(f)
+    R1, R1Q, R2Q, alpha = p[0], p[1], p[2], p[3]
+    Q=R1Q/R1
+    R2=R2Q/Q
+    t12=R1/R2
+    wclin1=1/(R1*Q)
+    wclin2=1/(R2*Q)
+    Z=[]
+    for omg in omega:
+        # S=np.sqrt((1j*omg)**alpha*R1*Q)
+        # print(t12-1)
+        S1=np.sqrt((1j*omg)**alpha/wclin1)
+        S2=np.sqrt((1j*omg)**alpha/wclin2)
+        Zelem = -(2*1j*R1/S1)*(((mp.bessely(1,-2*1j*t12*S2/(t12-1)))*(mp.besselj(0,-2*1j*S1/(t12-1))))-((mp.besselj(1,-2*1j*t12*S2/(t12-1)))*(mp.bessely(0,-2*1j*S1/(t12-1)))))/(((mp.besselj(1,-2*1j*t12*S2/(t12-1)))*(mp.bessely(1,-2*1j*S1/(t12-1))))-((mp.bessely(1,-2*1j*t12*S2/(t12-1)))*(mp.besselj(1,-2*1j*S1/(t12-1)))))
+        Zelem=mp.nstr(Zelem,n=50)
+        Zelem = Zelem.replace(' ','').replace('(','').replace(')','') 
+        Z.append(Zelem)
+
+    Z=np.asarray(Z,dtype=complex)
+
+    return Z
+
+@element(num_params=4, units=["Ohm", "Ohm F", "Ohm F", ""],overwrite=True)
 def TLMilinzert(p,f):
     omega = 2 * np.pi * np.array(f)
     R1, R1Q, R2Q, alpha = p[0], p[1], p[2], p[3]
